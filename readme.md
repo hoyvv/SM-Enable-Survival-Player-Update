@@ -1,4 +1,4 @@
-#Enable Survival Player [Update]
+# Enable Survival Player [Update]
 
 **Fork of the original "[Enable Survival Player]" by [Vajdani](https://github.com/Vajdani/SM-Enable-Survival-Player)**
 
