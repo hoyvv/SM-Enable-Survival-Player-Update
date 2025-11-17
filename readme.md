@@ -1,4 +1,4 @@
-# Enable Survival Player [Update]
+# Enable Survival Player [Updated]
 
 **Fork of the original "Enable Survival Player" by Vajdani**
 
