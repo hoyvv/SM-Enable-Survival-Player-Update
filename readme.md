@@ -20,7 +20,7 @@ The mod offers a few chat commands to customize your experience.
 - **/healthregeneration** - Toggles health regeneration
 - **/hunger** - Toggles hunger
 - **/thirst** - Toggles thirst
-- **/overridedisplaynames** - Sets the display mode of player names for all palyers
+- **/overridedisplaynames** - Sets the display mode of player names for all players mode(1-all / 2-team / 3-none / 4-no override)
 - **/breathloss** - Toggles breath loss underwater
 - **/respawnstats** - Sets start HP, thirst and hunger
 - **/clearallinventories** - Clears all items from all players' inventories
