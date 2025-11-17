@@ -1,6 +1,10 @@
 # Enable Survival Player [Update]
 
-**Fork of the original "[Enable Survival Player]" by [Vajdani](https://github.com/Vajdani/SM-Enable-Survival-Player)**
+**Fork of the original "Enable Survival Player" by Vajdani**
+
+**Original resources:**
+- [GitHub Repository](https://github.com/Vajdani/SM-Enable-Survival-Player)
+- [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3216708262)
 
 *The original mod is no longer maintained. This fork is updated and maintained by a developer from the Scrap Wars team.*
 
