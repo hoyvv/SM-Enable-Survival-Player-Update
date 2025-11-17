@@ -12,7 +12,9 @@
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-Original copyright (c) 2025 Vajdani
+**Copyright notices:**
+- Original work: Copyright (c) 2025 Vajdani
+- Modifications: Copyright (c) 2025 Scrap Wars team
 
 <hr style="height: 2px; background-color: #333; border: none;">
 
