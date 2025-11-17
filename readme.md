@@ -14,7 +14,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 **Copyright notices:**
 - Original work: Copyright (c) 2025 Vajdani
-- Modifications: Copyright (c) 2025 Hoyvv(Scrap Wars team)
+- Modifications: Copyright (c) 2025 Hoyvv([Scrap Wars team](https://discord.gg/zZ3zDyEMc2))
 
 <hr style="height: 2px; background-color: #333; border: none;">
 
