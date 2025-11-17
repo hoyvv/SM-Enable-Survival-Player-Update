@@ -20,10 +20,10 @@ The mod offers a few chat commands to customize your experience.
 - **/healthregeneration** - Toggles health regeneration
 - **/hunger** - Toggles hunger
 - **/thirst** - Toggles thirst
-- **/overridedisplaynames - Sets the display mode of player names for all palyers
+- **/overridedisplaynames** - Sets the display mode of player names for all palyers
 - **/breathloss** - Toggles breath loss underwater
 - **/respawnstats** - Sets start HP, thirst and hunger
-- **clearallinventories - Clears all items from all players' inventories
+- **/clearallinventories** - Clears all items from all players' inventories
 - **/creativeinventory** - Toggles the creative inventory
 - **/collisiontumble** - Toggles whether you can tumble from collisions
 - **/collisiondamage** - Toggles whether you can take damage from collisions
