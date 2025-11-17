@@ -287,6 +287,7 @@ function PlayerHook:sv_setNameDisplayMode(args)
 
     if args[3] == true then
         self.network:sendToClients("cl_setNameDisplayMode", { mode, true })
+        self:sv_forceUpdateAllNameTags(mode)  
     else
         if g_cl_nameDisplayModeOverrideActive then
             self:sv_chatMessage_single(args[1], "#ff0000HOST HAS OVERRIDEN THE NAME DISPLAY MODE")
@@ -312,7 +313,21 @@ function PlayerHook:sv_requestDataUpdate(_, caller)
     end
 end
 
+function PlayerHook:sv_clearInventories()
+    local players = sm.player.getAllPlayers()
 
+    for _, player in ipairs(players) do 
+        local inventory = player:getInventory()      
+        for k, v in pairs(sm.container.itemUuid(inventory)) do
+            if sm.container.canSpend( inventory, v, 1 ) then
+                if sm.container.beginTransaction() then
+                    sm.container.spend( inventory, v, 999, false )
+                    sm.container.endTransaction()
+                end
+            end
+        end
+    end
+end
 
 local nameDisplayModes = {
     "ALL", "TEAM", "NONE"
@@ -366,6 +381,22 @@ end
 
 function PlayerHook:cl_chatMessage(msg)
     sm.gui.chatMessage(msg)
+end
+
+function PlayerHook:cl_forceUpdateNameTag(mode)
+    self.nameDisplayModeOverride = mode
+    g_cl_nameDisplayModeOverrideActive = mode ~= 4
+    
+    self:cl_chatMessage("#ff0000ENFORCED#ffffff NAME DISPLAY MODE: #df7f00"..nameDisplayModes[mode])
+end
+
+function PlayerHook:sv_forceUpdateAllNameTags(mode)
+    local players = sm.player.getAllPlayers()
+    for _, player in ipairs(players) do
+        if player and sm.exists(player.character) then
+            self.network:sendToClient(player, "cl_forceUpdateNameTag", mode)
+        end
+    end
 end
 
 function PlayerHook:cl_ConfirmOverwrite(name)
@@ -544,12 +575,13 @@ local commands = {
             { "bool", "enable", true },
         }
     },
-    { name = "displayNames",        description = "Sets the display mode of player names",
-        args = {
-            { "int", "mode(1-all/2-team/3-none)", true },
-        },
-        all = true
-    },
+
+    -- { name = "displayNames",        description = "Sets the display mode of player names",
+    --     args = {
+    --         { "int", "mode(1-all/2-team/3-none)", true },
+    --     },
+    -- },
+
     { name = "overrideDisplayNames",description = "Sets the display mode of player names for all palyers",
         args = {
             { "int", "mode(1-all/2-team/3-none/4-no override)", true },
@@ -566,13 +598,14 @@ local commands = {
             { "bool", "enable", true },
         }
     },
+    { name = "clearAllInventories",      description = "Toggles whether the player gets knocked out of their seat upon taking damage"},
 }
 
 oldBind = oldBind or sm.game.bindChatCommand
 function bindHook(command, params, callback, help)
     if not gameHooked then
         gameHooked = true
-
+        
         for k, v in pairs(commands) do
             if v.all or sm.isHost then
                 oldBind( "/"..v.name:lower(), v.args or {}, "cl_onChatCommand", v.description )
@@ -605,8 +638,9 @@ end
 
 oldWorldEvent = oldWorldEvent or sm.event.sendToWorld
 function worldEventHook(world, callback, args)
-    --sm.log.warning("WORLD EVENT HOOK:", world, callback, args)
-
+    -- sm.log.warning("WORLD EVENT HOOK:", world, callback, args)
+    print(callback, args)
+    
     if callback == "sv_e_onChatCommand" then
         local command = args[1]
         if command == "/pvp" then
@@ -756,12 +790,12 @@ function worldEventHook(world, callback, args)
             sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player, text })
         elseif command == "/friendlyfire" then
             toggleRule("friendlyFire", "FRIENDLY FIRE: ", args[2])
-        elseif command == "/displaynames" then
-            local mode = tonumber(args[2])
-            if not mode or mode < 1 or mode > #nameDisplayModes then
-                sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player, ("#ff0000MODE ID MUST BE A NUMBER BETWEEN '#ffffff1#ff0000' and '#ffffff%s#ff0000'"):format(#nameDisplayModes) })
-                return
-            end
+        -- elseif command == "/displaynames" then
+        --     local mode = tonumber(args[2])
+        --     if not mode or mode < 1 or mode > #nameDisplayModes then
+        --         sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player, ("#ff0000MODE ID MUST BE A NUMBER BETWEEN '#ffffff1#ff0000' and '#ffffff%s#ff0000'"):format(#nameDisplayModes) })
+        --         return
+        --     end
 
             sm.event.sendToTool(sm.PLAYERHOOK, "sv_setNameDisplayMode", { args.player, mode })
         elseif command == "/setrespawncooldown" then
@@ -771,6 +805,7 @@ function worldEventHook(world, callback, args)
             sm.SURVIVAL_EXTENSION_syncToPlayers()
         elseif command == "/unseatondamage" then
             toggleRule("unSeatOnDamage", "UNSEAT ON DAMAGE: ", args[2])
+
         elseif command == "/overridedisplaynames" then
             local mode = tonumber(args[2])
             if not mode or mode < 1 or mode > #overrideNameDisplayModes then
@@ -779,8 +814,17 @@ function worldEventHook(world, callback, args)
             end
 
             sm.event.sendToTool(sm.PLAYERHOOK, "sv_setNameDisplayMode", { args.player, mode, true })
+        elseif command == "/clearallinventories" then
+            if not sm.game.getLimitedInventory() then
+                sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player, "#ff0000TURN OFF CREATIVE: #ffffff/creativeinventory" })
+                return
+            end
+            sm.event.sendToTool(sm.PLAYERHOOK, "sv_clearInventories")
+            sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage", "ALL INVENTORIES CLEARED!")        
         end
+
     end
+    
 
     return oldWorldEvent(world, callback, args)
 end
