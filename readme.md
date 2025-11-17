@@ -9,3 +9,5 @@
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 Original copyright (c) 2025 Vajdani
+
+<hr style="height: 2px; background-color: #333; border: none;">
