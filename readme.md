@@ -30,6 +30,7 @@ The mod offers a few chat commands to customize your experience.
 - **/breathloss** - Toggles breath loss underwater
 - **/respawnstats** - Sets start HP, thirst and hunger
 - **/clearallinventories** - Clears all items from all players' inventories
+- **/clearteamspawnpoint** - Clear team spawn point
 - **/creativeinventory** - Toggles the creative inventory
 - **/collisiontumble** - Toggles whether you can tumble from collisions
 - **/collisiondamage** - Toggles whether you can take damage from collisions
@@ -42,8 +43,8 @@ The mod offers a few chat commands to customize your experience.
 - **/deleteteam** - Deletes a team
 - **/friendlyfire** - Toggles friendly fire
 - **/setrespawncooldown** - Sets the respawn cooldown
+- **/setteamspawnpoint** - Set team spawn point
 - **/unseatondamage** - Sets whether the player gets unseated upon receiving damage
-
 **Commands usable by everyone**
 - **/setspawnpoint** - Sets your spawn point(takes priority over beds)
 - **/clearspawnpoint** - Clears your spawn point
