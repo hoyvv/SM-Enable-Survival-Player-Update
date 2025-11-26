@@ -45,6 +45,7 @@ The mod offers a few chat commands to customize your experience.
 - **/setrespawncooldown** - Sets the respawn cooldown
 - **/setteamspawnpoint** - Set team spawn point
 - **/unseatondamage** - Sets whether the player gets unseated upon receiving damage
+  
 **Commands usable by everyone**
 - **/setspawnpoint** - Sets your spawn point(takes priority over beds)
 - **/clearspawnpoint** - Clears your spawn point
