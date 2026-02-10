@@ -1,3 +1,4 @@
+---@diagnostic disable: need-check-nil, missing-parameter, duplicate-set-field
 -- LostItems.lua --
 
 LostItems = class( nil )
@@ -16,11 +17,13 @@ function LostItems.server_onCreate( self )
 	if self.sv.saved == nil then
 		self.sv.saved = {}
 	end
+	
 	if self.params then
 		if self.params.owner then
 			self.sv.saved.owner = self.params.owner
 		end
 	end
+
 	self.storage:save( self.sv.saved )
 	self.network:setClientData( self.sv.saved )
 
