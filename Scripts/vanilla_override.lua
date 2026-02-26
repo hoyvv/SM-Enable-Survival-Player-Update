@@ -1,4 +1,3 @@
----@diagnostic disable: lowercase-global
 g_survivalDev = false
 
 g_survivalHud = g_survivalHud or sm.gui.createSurvivalHudGui()
@@ -41,6 +40,8 @@ local RespawnEndFadeDuration = 0.45
 local RespawnFadeTimeout = 5.0
 local RespawnDelay = RespawnFadeDuration * 40
 local RespawnEndDelay = 1.0 * 40
+
+
 
 local MaxTumbleImpulseSpeed = 35
 
@@ -419,10 +420,10 @@ function SurvivalPlayer.sv_takeDamage( self, damage, source, attacker )
 	end
 end
 
-
 function SurvivalPlayer:sv_syncRules(data)
 	self.network:sendToClient(self.player, "cl_syncRules", data)
 end
+
 
 
 oldClientCreate = oldClientCreate or SurvivalPlayer.client_onCreate
@@ -467,6 +468,8 @@ function SurvivalPlayer:cl_syncRules(data)
 	g_respawnCooldown = data.respawnCooldown
 end
 
+
+
 oldClass = oldClass or class
 function newClass(_class)
     if _class then
@@ -483,6 +486,8 @@ function newClass(_class)
 end
 class = newClass
 
+
+
 worldsHooked = worldsHooked or false
 if not worldsHooked then
 	for k, v in pairs({ MenuWorld, ClassicCreativeTerrainWorld, CreativeCustomWorld, CreativeTerrainWorld, CreativeFlatWorld }) do
@@ -497,7 +502,7 @@ if not worldsHooked then
 				local zSignOffset = math.min( sign( normal.z ), 0 ) * 0.5
 				local offset = sm.vec3.new( 0, 0, zSignOffset )
 				local lootHarvestable = sm.harvestable.createHarvestable( sm.uuid.new("97fe0cf2-0591-4e98-9beb-9186f4fd83c8"), hitPos + offset, sm.vec3.getRotation( sm.vec3.new( 0, 1, 0 ), sm.vec3.new( 0, 0, 1 ) ) )
-				lootHarvestable:setParams( { uuid = userData.lootUid, quantity = userData.lootQuantity, epic = userData.epic  } ) 
+				lootHarvestable:setParams( { uuid = userData.lootUid, quantity = userData.lootQuantity, epic = userData.epic  } )
 			end
 		end
 		v.server_onProjectile = newProjectile

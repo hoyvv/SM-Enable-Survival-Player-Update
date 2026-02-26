@@ -160,7 +160,6 @@ function PlayerHook:sv_OnPlayerDeath(args)
 end
 
 
-
 local charIdToName = {
     ["264a563a-e304-430f-a462-9963c77624e9"] = "Woc",
     ["04761b4a-a83e-4736-b565-120bc776edb2"] = "Tapebot",
@@ -173,6 +172,7 @@ local charIdToName = {
     ["9f4fde94-312f-4417-b13b-84029c5d6b52"] = "Farmbot",
     ["48c03f69-3ec8-454c-8d1a-fa09083363b1"] = "Glowbug"
 }
+
 
 function PlayerHook:sv_OnPlayerDeathByUnit(args)
     ---@type Player
@@ -322,6 +322,7 @@ local nameDisplayModes = {
 local overrideNameDisplayModes = {
     "ALL", "TEAM", "NONE", "NO OVERRIDE"
 }
+
 function PlayerHook:client_onCreate()
     if sm.PLAYERHOOKCLIENT then return end --avoid multiple loads
 
@@ -848,9 +849,13 @@ end
 function PlayerHook:sv_handleSuicideCommand(args)
     local character = args.player:getCharacter()
     
+    if sm.SURVIVAL_EXTENSION.godMode then
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player,  "#ff0000TURN OFF GOD MODE: #ffffff/godmode"})
+        return
+    end
+
     if character and sm.exists(character) then
         sm.event.sendToPlayer(args.player, "sv_takeDamage", 100)
-
     end
 end
 
@@ -859,7 +864,7 @@ end
 -- function hudHook()
 --     if not gameHooked then
 --         gameHooked = true
---         dofile("$CONTENT_a929f1de-4824-456c-b3ac-da6c47a4b4a2/Scripts/vanilla_override.lua")
+--         dofile("$CONTENT_DATA/Scripts/vanilla_override.lua")
 --     end
 
 -- 	return oldHud()
@@ -1025,7 +1030,7 @@ local commands = {
         args = {
             { "string", "teamName", false }
         }
-    }, 
+    },
 
     { name = "clearTeamSpawnPoint", description = "Remove custom spawn point for a team",
         args = {
@@ -1082,7 +1087,7 @@ function bindHook(command, params, callback, help)
             end
         end
 
-        dofile("$CONTENT_a929f1de-4824-456c-b3ac-da6c47a4b4a2/Scripts/vanilla_override.lua")
+        dofile("$CONTENT_24fc65a7-e1aa-4b66-86bc-d8229df53981/Scripts/vanilla_override.lua")
     end
 
 	return oldBind(command, params, callback, help)
@@ -1091,7 +1096,7 @@ sm.game.bindChatCommand = bindHook
 
 oldWorldEvent = oldWorldEvent or sm.event.sendToWorld
 function worldEventHook(world, callback, args)
-    -- sm.log.warning("WORLD EVENT HOOK:", world, callback, args)
+    sm.log.warning("WORLD EVENT HOOK:", world, callback, args)
 
     if callback == "sv_e_onChatCommand" then
         local command = args[1]
