@@ -1,34 +1,44 @@
 # Enable Survival Player [Updated]
-**Fork of the original "Enable Survival Player" by Vajdani**
+
+> **Fork of the original "Enable Survival Player" by Vajdani**
 
 **Original resources:**
+
 - [GitHub Repository](https://github.com/Vajdani/SM-Enable-Survival-Player)
 - [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3216708262)
 
-*The original mod is no longer maintained. This fork is updated and maintained by a developer from the Scrap Wars team.*
+> *The original mod is no longer maintained. This fork is updated and maintained by a developer from the Scrap Wars team.*
+
+---
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 **Copyright notices:**
-- Original work: Copyright (c) 2025 Vajdani
-- Modifications: Copyright (c) 2025-present Hoyvv ([Scrap Wars team](https://discord.gg/zZ3zDyEMc2))
+
+- Original work: Copyright © 2025 Vajdani
+- Modifications: Copyright © 2025–present Hoyvv ([Scrap Wars team](https://discord.gg/zZ3zDyEMc2))
 
 ---
 
 # Enable Survival Player
+
 This mod enables survival functionality in creative mode. Tested in multiplayer — use at your own risk in custom game modes.
 
 The mod offers several chat commands to customize your experience.
 
-## Host only commands
+---
+
+## Host-Only Commands
+
 | Command | Description |
-|---------|-------------|
-| `/pvp` | Enables player vs player mode, players can hurt each other |
+|---|---|
+| `/pvp` | Enables player vs. player mode — players can hurt each other |
 | `/healthregeneration` | Toggles health regeneration |
 | `/hunger` | Toggles hunger |
 | `/thirst` | Toggles thirst |
-| `/overridedisplaynames` | Sets the display mode of player names for all players `(1-all / 2-team / 3-none / 4-no override)` |
+| `/overridedisplaynames` | Sets the display mode of player names for all players (`1` — all / `2` — team / `3` — none / `4` — no override) |
 | `/breathloss` | Toggles breath loss underwater |
 | `/respawnstats` | Sets start HP, thirst, and hunger |
 | `/clearallinventories` | Clears all items from all players' inventories |
@@ -48,9 +58,12 @@ The mod offers several chat commands to customize your experience.
 | `/setteamspawnpoint` | Sets a specific spawn point for a team |
 | `/clearteamspawnpoint` | Clears the spawn point for a team |
 
-## Commands usable by everyone
+---
+
+## Commands Usable by Everyone
+
 | Command | Description |
-|---------|-------------|
+|---|---|
 | `/setspawnpoint` | Sets your personal spawn point (takes priority over beds) |
 | `/clearspawnpoint` | Clears your personal spawn point |
 | `/setteam` | Sets your team |

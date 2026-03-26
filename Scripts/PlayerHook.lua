@@ -763,18 +763,26 @@ function PlayerHook:sv_handleClearAllInventoriesCommand(args)
     for _, player in ipairs(players) do 
         local inventory = player:getInventory()
         
-        if inventory and sm.exists(inventory) then
-            sm.container.beginTransaction()
-            
-            for i = 0, inventory:getSize() - 1 do
-                local item = inventory:getItem(i)
+        if sm.exists(inventory) then
+            local attempts = 0
+            local maxAttempts = 3
+
+            while not inventory:isEmpty() and attempts < maxAttempts do
+                if sm.container.beginTransaction() then
                 
-                if not item.uuid:isNil() then
-                    sm.container.setItem(inventory, i, nilUuid, 0)
+                    for i = 0, inventory:getSize() - 1 do
+                        local item = inventory:getItem(i)
+                        
+                        if not item.uuid:isNil() then
+                            sm.container.setItem(inventory, i, nilUuid, 0)
+                        end
+                    end
+                    
+                    sm.container.endTransaction()
                 end
+
+                attempts = attempts + 1
             end
-            
-            sm.container.endTransaction()
         end
     end
 
@@ -998,12 +1006,6 @@ local commands = {
             { "bool", "enable", true },
         }
     },
-
-    -- { name = "displayNames",        description = "Sets the display mode of player names",
-    --     args = {
-    --         { "int", "mode(1-all/2-team/3-none)", true },
-    --     },
-    -- },
 
     { name = "overrideDisplayNames",description = "Sets the display mode of player names for all palyers",
         args = {

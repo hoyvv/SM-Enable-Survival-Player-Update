@@ -41,8 +41,6 @@ local RespawnFadeTimeout = 5.0
 local RespawnDelay = RespawnFadeDuration * 40
 local RespawnEndDelay = 1.0 * 40
 
-
-
 local MaxTumbleImpulseSpeed = 35
 
 function SurvivalPlayer.sv_n_tryRespawn( self )
@@ -234,7 +232,11 @@ function SurvivalPlayer.server_onFixedUpdate( self, dt )
 					local recoveredHp = foodSpend / FastFoodCostPerHpRecovery
 
 					self.sv.saved.stats.hp = math.min( self.sv.saved.stats.hp + recoveredHp, self.sv.saved.stats.maxhp )
-					self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+
+					if sm.SURVIVAL_EXTENSION.hunger then
+						self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+					end
+
 					fastRecoveryFraction = ( recoveredHp ) / FastHpRecovery
 				end
 
@@ -244,7 +246,10 @@ function SurvivalPlayer.server_onFixedUpdate( self, dt )
 				local recoveredHp = foodSpend / FoodCostPerHpRecovery
 
 				self.sv.saved.stats.hp = math.min( self.sv.saved.stats.hp + recoveredHp, self.sv.saved.stats.maxhp )
-				self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+
+				if sm.SURVIVAL_EXTENSION.hunger then
+					self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+				end
 			end
 
 			-- Spend water and food on stamina usage
@@ -261,11 +266,11 @@ function SurvivalPlayer.server_onFixedUpdate( self, dt )
 			self.sv.staminaSpend = 0
 
 			local fatigueDamageFromHp = false
-			if self.sv.saved.stats.food <= 0 then
+			if self.sv.saved.stats.food <= 0 and sm.SURVIVAL_EXTENSION.hunger then
 				self:sv_takeDamage( FatigueDamageHp, "fatigue" )
 				fatigueDamageFromHp = true
 			end
-			if self.sv.saved.stats.water <= 0 then
+			if self.sv.saved.stats.water <= 0 and sm.SURVIVAL_EXTENSION.thirst then
 				if not fatigueDamageFromHp then
 					self:sv_takeDamage( FatigueDamageWater, "fatigue" )
 				end
