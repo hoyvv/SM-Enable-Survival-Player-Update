@@ -2,7 +2,7 @@
 ---@class PlayerHook : ToolClass
 PlayerHook = class()
 
-dofile( "$SURVIVAL_DATA/Scripts/game/managers/RespawnManager.lua" )
+dofile("$SURVIVAL_DATA/Scripts/game/managers/RespawnManager.lua")
 
 local SAVEKEY = "38d8bd7e-e2d4-42cc-8f2b-5acb2b03fccd"
 local SETTINGSPATH = "$CONTENT_DATA/presets.json"
@@ -27,7 +27,7 @@ local function cl_GetPlayerTeamFull(player)
     local data = (player.clientPublicData or {})
     local team = data.survivalExtensionTeam
     if team then
-        return ("[%s#ffffff] "):format(data.survivalExtensionTeamColour..team)
+        return ("[%s#ffffff] "):format(data.survivalExtensionTeamColour .. team)
     end
 
     return ""
@@ -47,6 +47,7 @@ sm.SURVIVAL_EXTENSION_ruleToSyncToPlayers = {
     thirst = true,
     respawnCooldown = true
 }
+
 function sm.SURVIVAL_EXTENSION_syncToPlayers(player)
     local data = {}
     for k, v in pairs(sm.SURVIVAL_EXTENSION_ruleToSyncToPlayers) do
@@ -63,20 +64,20 @@ function sm.SURVIVAL_EXTENSION_syncToPlayers(player)
 end
 
 local function isAnyOf(is, off)
-	for _, v in pairs(off) do
-		if is == v then
-			return true
-		end
-	end
+    for _, v in pairs(off) do
+        if is == v then
+            return true
+        end
+    end
 
-	return false
+    return false
 end
 
 --set to empty table before loading
 sm.SURVIVAL_EXTENSION = sm.SURVIVAL_EXTENSION or {}
 
 function PlayerHook:server_onCreate()
-    if sm.PLAYERHOOK then return end --avoid multiple loads
+    if sm.PLAYERHOOK then return end  --avoid multiple loads
 
     local saved = self.storage:load() --sm.storage.load(SAVEKEY)
     sm.SURVIVAL_EXTENSION = saved or {
@@ -113,7 +114,7 @@ function PlayerHook:server_onCreate()
     sm.SURVIVAL_EXTENSION_syncToPlayers()
 
     g_respawnManager = RespawnManager()
-	g_respawnManager:sv_onCreate( sm.world.getCurrentWorld() )
+    g_respawnManager:sv_onCreate(sm.world.getCurrentWorld())
     sm.RESPAWNMANAGER = g_respawnManager
 
     sm.PLAYERHOOK = self.tool
@@ -148,17 +149,29 @@ function PlayerHook:sv_chatMessage_single(player, msg)
     self.network:sendToClient(player, "cl_chatMessage", msg)
 end
 
-function PlayerHook:sv_OnPlayerDeath(args)
+function PlayerHook:sv_OnPlayerDeathByPlayer(args)
     local attacker, victim = args.attacker, args.victim
     self.network:sendToClients(
         "cl_chatMessage",
         ("%s #ffffffkilled %s#ffffff!"):format(
-            GetTeamData(sm.GetPlayerTeam(attacker)).colour..attacker:getName(),
-            GetTeamData(sm.GetPlayerTeam(victim)).colour..victim:getName()
+            GetTeamData(sm.GetPlayerTeam(attacker)).colour .. attacker:getName(),
+            (sm.GetPlayerTeam(victim)).colour .. victim:getName()
         )
     )
 end
 
+function PlayerHook:sv_onUnknownPlayerDeath(args)
+    ---@type Player
+    local victim = args.victim
+
+    self.network:sendToClients(
+        "cl_chatMessage",
+        ("%s #ffffffkilled %s#ffffff!"):format(
+            "Unknown force",
+            GetTeamData(sm.GetPlayerTeam(victim)).colour .. victim:getName()
+        )
+    )
+end
 
 local charIdToName = {
     ["264a563a-e304-430f-a462-9963c77624e9"] = "Woc",
@@ -181,8 +194,8 @@ function PlayerHook:sv_OnPlayerDeathByUnit(args)
         self.network:sendToClients(
             "cl_chatMessage",
             ("%s #ffffffkilled %s#ffffff!"):format(
-                "unknown",
-                GetTeamData(sm.GetPlayerTeam(victim)).colour..victim:getName()
+                "Unknown unit",
+                GetTeamData(sm.GetPlayerTeam(victim)).colour .. victim:getName()
             )
         )
 
@@ -194,8 +207,8 @@ function PlayerHook:sv_OnPlayerDeathByUnit(args)
     self.network:sendToClients(
         "cl_chatMessage",
         ("#%s #ffffffkilled %s#ffffff!"):format(
-            attacker.color:getHexStr():sub(1,6)..(charIdToName[tostring(attacker:getCharacterType())] or "unknown"),
-            GetTeamData(sm.GetPlayerTeam(victim)).colour..victim:getName()
+            attacker.color:getHexStr():sub(1, 6) .. (charIdToName[tostring(attacker:getCharacterType())] or "unknown"),
+            GetTeamData(sm.GetPlayerTeam(victim)).colour .. victim:getName()
         )
     )
 end
@@ -215,7 +228,8 @@ function PlayerHook:sv_handlePresetLoad(args)
     local presets = loadPresets()
     local presetName = args[2]
     if presets[presetName] == nil then
-        self:sv_chatMessage_single(args.player, ("#ff0000NO PRESET BY THE NAME OF '#ffffff%s#ff0000' FOUND"):format(presetName))
+        self:sv_chatMessage_single(args.player,
+            ("#ff0000NO PRESET BY THE NAME OF '#ffffff%s#ff0000' FOUND"):format(presetName))
     else
         local preset = presets[presetName]
         preset.playerSpawns = preset.playerSpawns or {}
@@ -236,17 +250,17 @@ function PlayerHook:sv_handlePresetLoad(args)
                         members = "No members"
                     else
                         for k, member in pairs(players) do
-                            members = members..(k == #players and "%s" or "%s, "):format(member)
+                            members = members .. (k == #players and "%s" or "%s, "):format(member)
                         end
                     end
 
-                    append = append..("\n\t\t%s%s#ffffff:\n\t\t%s"):format(teamData.colour, team, members)
+                    append = append .. ("\n\t\t%s%s#ffffff:\n\t\t%s"):format(teamData.colour, team, members)
                 end
             else
                 append = setting
             end
 
-            text = text..("#ffffff\n\t%s: #df7f00%s"):format(name, append)
+            text = text .. ("#ffffff\n\t%s: #df7f00%s"):format(name, append)
         end
 
         local players = {}
@@ -257,7 +271,7 @@ function PlayerHook:sv_handlePresetLoad(args)
         for team, data in pairs(sm.SURVIVAL_EXTENSION.teams) do
             for k, member in pairs(data.players) do
                 if players[member] then
-                    self:sv_setPlayerTeam({players[member], team, data.colour})
+                    self:sv_setPlayerTeam({ players[member], team, data.colour })
                 end
             end
         end
@@ -290,7 +304,7 @@ function PlayerHook:sv_setNameDisplayMode(args)
 
     if args[3] == true then
         self.network:sendToClients("cl_setNameDisplayMode", { mode, true })
-        self:sv_forceUpdateAllNameTags(mode)  
+        self:sv_forceUpdateAllNameTags(mode)
     else
         if g_cl_nameDisplayModeOverrideActive then
             self:sv_chatMessage_single(args[1], "#ff0000HOST HAS OVERRIDEN THE NAME DISPLAY MODE")
@@ -306,7 +320,7 @@ function PlayerHook:sv_requestDataUpdate(_, caller)
     local name = caller:getName()
     for k, v in pairs(sm.SURVIVAL_EXTENSION.teams) do
         if isAnyOf(name, v.players) then
-            self:sv_setPlayerTeam({caller, k, GetTeamData(k).colour})
+            self:sv_setPlayerTeam({ caller, k, GetTeamData(k).colour })
             break
         end
     end
@@ -327,10 +341,10 @@ function PlayerHook:client_onCreate()
     if sm.PLAYERHOOKCLIENT then return end --avoid multiple loads
 
     if g_respawnManager == nil then
-		assert( not sm.isHost )
-		g_respawnManager = RespawnManager()
-	end
-	g_respawnManager:cl_onCreate()
+        assert(not sm.isHost)
+        g_respawnManager = RespawnManager()
+    end
+    g_respawnManager:cl_onCreate()
 
     sm.PLAYERHOOKCLIENT = self.tool
 
@@ -359,7 +373,7 @@ function PlayerHook:client_onFixedUpdate()
             if displayMode == 1 then
                 char:setNameTag(name)
             else
-                char:setNameTag(localPlayerTeam == cl_GetPlayerTeam(v) and cl_GetPlayerTeamFull(v)..name or "")
+                char:setNameTag(localPlayerTeam == cl_GetPlayerTeam(v) and cl_GetPlayerTeamFull(v) .. name or "")
             end
         end
 
@@ -374,8 +388,8 @@ end
 function PlayerHook:cl_forceUpdateNameTag(mode)
     self.nameDisplayModeOverride = mode
     g_cl_nameDisplayModeOverrideActive = mode ~= 4
-    
-    self:cl_chatMessage("#ff0000ENFORCED#ffffff NAME DISPLAY MODE: #df7f00"..nameDisplayModes[mode])
+
+    self:cl_chatMessage("#ff0000ENFORCED#ffffff NAME DISPLAY MODE: #df7f00" .. nameDisplayModes[mode])
 end
 
 function PlayerHook:sv_forceUpdateAllNameTags(mode)
@@ -389,21 +403,21 @@ end
 
 function PlayerHook:cl_ConfirmOverwrite(name)
     self.presetName = name
-    self.confirmGui = sm.gui.createGuiFromLayout( "$GAME_DATA/Gui/Layouts/PopUp/PopUp_YN.layout" )
-    self.confirmGui:setButtonCallback( "Yes", "cl_onConfirmButtonClick" )
-    self.confirmGui:setButtonCallback( "No", "cl_onConfirmButtonClick" )
-    self.confirmGui:setText( "Title", "#{MENU_YN_TITLE_ARE_YOU_SURE}" )
-    self.confirmGui:setText( "Message", ("This will overwrite the existing '#df7f00%s#919191' preset."):format(name) )
+    self.confirmGui = sm.gui.createGuiFromLayout("$GAME_DATA/Gui/Layouts/PopUp/PopUp_YN.layout")
+    self.confirmGui:setButtonCallback("Yes", "cl_onConfirmButtonClick")
+    self.confirmGui:setButtonCallback("No", "cl_onConfirmButtonClick")
+    self.confirmGui:setText("Title", "#{MENU_YN_TITLE_ARE_YOU_SURE}")
+    self.confirmGui:setText("Message", ("This will overwrite the existing '#df7f00%s#919191' preset."):format(name))
     self.confirmGui:open()
 end
 
-function PlayerHook.cl_onConfirmButtonClick( self, name )
-	if name == "Yes" then
+function PlayerHook.cl_onConfirmButtonClick(self, name)
+    if name == "Yes" then
         savePreset(loadPresets(), self.presetName)
-	end
+    end
 
     self.confirmGui:close()
-	self.confirmGui = nil
+    self.confirmGui = nil
     self.presetName = nil
 end
 
@@ -423,7 +437,7 @@ function PlayerHook:cl_setPlayerTeam(args)
         return
     end
 
-    player.character:setNameTag(("[%s#ffffff] %s"):format(teamColour..team, name))
+    player.character:setNameTag(("[%s#ffffff] %s"):format(teamColour .. team, name))
 end
 
 function PlayerHook:cl_setNameDisplayMode(args)
@@ -432,14 +446,14 @@ function PlayerHook:cl_setNameDisplayMode(args)
     g_cl_nameDisplayModeOverrideActive = override and mode ~= 4
     if g_cl_nameDisplayModeOverrideActive then
         self.nameDisplayModeOverride = mode
-        self:cl_chatMessage("#ff0000ENFORCED#ffffff NAME DISPLAY MODE: #df7f00"..nameDisplayModes[mode])
+        self:cl_chatMessage("#ff0000ENFORCED#ffffff NAME DISPLAY MODE: #df7f00" .. nameDisplayModes[mode])
     else
         if self.nameDisplayModeOverride or mode == 4 then
-            self:cl_chatMessage("OVERRIDE CLEARED, NAME DISPLAY MODE: #df7f00"..nameDisplayModes[self.nameDisplayMode])
+            self:cl_chatMessage("OVERRIDE CLEARED, NAME DISPLAY MODE: #df7f00" .. nameDisplayModes[self.nameDisplayMode])
             self.nameDisplayModeOverride = nil
         else
             self.nameDisplayMode = mode
-            self:cl_chatMessage("NAME DISPLAY MODE: #df7f00"..nameDisplayModes[mode])
+            self:cl_chatMessage("NAME DISPLAY MODE: #df7f00" .. nameDisplayModes[mode])
         end
     end
 end
@@ -456,7 +470,7 @@ local function toggleRule(rule, msg, value)
         sm.SURVIVAL_EXTENSION_syncToPlayers()
     end
 
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", msg..(new and "#00ff00ON" or "#ff0000OFF"))
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", msg .. (new and "#00ff00ON" or "#ff0000OFF"))
 end
 
 function PlayerHook:sv_sendAvailableTeams(player, errorMessage)
@@ -472,7 +486,7 @@ function PlayerHook:sv_handleChatCommand(command, args)
     if not self.commandHandlers then
         self:sv_registerCommandHandlers()
     end
-    
+
     local handler = self.commandHandlers[command]
     if handler then
         return handler(self, args)
@@ -530,24 +544,25 @@ function PlayerHook:sv_handleRespawnStatsCommand(args)
     sm.SURVIVAL_EXTENSION.spawn_hp = hp
     sm.SURVIVAL_EXTENSION.spawn_water = water
     sm.SURVIVAL_EXTENSION.spawn_food = food
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", 
-        ("RESPAWN STATS: \n\tHP: #df7f00%s #ffffff\n\tWATER: #df7f00%s #ffffff\n\tFOOD: #df7f00%s"):format(hp, water, food)
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat",
+        ("RESPAWN STATS: \n\tHP: #df7f00%s #ffffff\n\tWATER: #df7f00%s #ffffff\n\tFOOD: #df7f00%s"):format(hp, water,
+            food)
     )
 end
 
 function PlayerHook:sv_handleCreativeInventoryCommand(args)
     local new = not sm.game.getLimitedInventory()
     sm.game.setLimitedInventory(new)
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage", 
-        "CREATIVE INVENTORY: "..(not new and "#00ff00ON" or "#ff0000OFF")
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage",
+        "CREATIVE INVENTORY: " .. (not new and "#00ff00ON" or "#ff0000OFF")
     )
 end
 
 function PlayerHook:sv_handleAmmoConsumptionCommand(args)
     local new = not sm.game.getEnableAmmoConsumption()
     sm.game.setEnableAmmoConsumption(new)
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage", 
-        "AMMO CONSUMPTION: "..(new and "#00ff00ON" or "#ff0000OFF")
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage",
+        "AMMO CONSUMPTION: " .. (new and "#00ff00ON" or "#ff0000OFF")
     )
 end
 
@@ -564,17 +579,18 @@ function PlayerHook:sv_handleSetSpawnPointCommand(args)
     local team = sm.SURVIVAL_EXTENSION.teams and sm.SURVIVAL_EXTENSION.teams[sm.GetPlayerTeam(player)]
 
     if team and not team.allowCustomSpawn then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { player, "Custom spawns are disabled for your team!"})
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single",
+            { player, "Custom spawns are disabled for your team!" })
         return
-    end 
-    
+    end
+
     local worldPos = player.character.worldPosition
     sm.SURVIVAL_EXTENSION.playerSpawns[player.id] = worldPos
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat_single", { 
-        player, 
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat_single", {
+        player,
         ("SET SPAWN POINT TO: \n\t#ffffffx: #df7f00%s \n\t#ffffffy: #df7f00%s \n\t#ffffffz: #df7f00%s"):format(
             worldPos.x, worldPos.y, worldPos.z
-        ) 
+        )
     })
 end
 
@@ -583,44 +599,48 @@ function PlayerHook:sv_handleClearSpawnPointCommand(args)
     local team = sm.SURVIVAL_EXTENSION.teams and sm.SURVIVAL_EXTENSION.teams[sm.GetPlayerTeam(player)]
 
     if team and not team.allowCustomSpawn then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { player, "Spawn clearing is disabled for your team!"})
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single",
+            { player, "Spawn clearing is disabled for your team!" })
         return
-    end 
+    end
 
     sm.SURVIVAL_EXTENSION.playerSpawns[player.id] = nil
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat_single", { 
-        player, "CLEARED SPAWN POINT" 
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat_single", {
+        player, "CLEARED SPAWN POINT"
     })
 end
 
 function PlayerHook:sv_handleCreateTeamCommand(args)
-    local teamName, allow, teamColour  = args[2], args[3], args[4]
-    local finalColour = teamColour
+    local teamName, allow, teamColour = args[2], args[3], args[4]
+    local finalColour = teamColour or "#888888"
+
     if teamColour then
-        local start = teamColour:sub(1,1)
-        if start ~= "#" then
-            finalColour = "#"..teamColour
+        if finalColour:sub(1, 1) ~= "#" then
+            finalColour = "#" .. finalColour
         end
-        finalColour = finalColour..string.rep(0, math.max(7 - #finalColour, 0))
-    else
-        finalColour = "#888888"
+
+        local padding = math.max(7 - #finalColour, 0)
+        finalColour = finalColour .. string.rep("0", padding)
+
+        finalColour = finalColour:sub(1, 7)
     end
 
     if sm.SURVIVAL_EXTENSION.teams[teamName] ~= nil then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { 
-            args.player, 
-            ("#ff0000TEAM '%s%s#ff0000' ALREADY EXISTS"):format(finalColour, teamName) 
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {
+            args.player,
+            ("#ff0000TEAM '%s%s#ff0000' ALREADY EXISTS"):format(finalColour, teamName)
         })
         return
     end
 
-    sm.SURVIVAL_EXTENSION.teams[teamName] = { 
-        colour = finalColour, 
-        players = {}, 
-        spawnPoint = nil, 
+    sm.SURVIVAL_EXTENSION.teams[teamName] = {
+        colour = finalColour,
+        players = {},
+        spawnPoint = nil,
         allowCustomSpawn = allow
     }
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", 
+
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat",
         ("CREATED TEAM %s%s"):format(finalColour, teamName)
     )
 end
@@ -628,9 +648,9 @@ end
 function PlayerHook:sv_handleDeleteTeamCommand(args)
     local teamName = args[2]
     if sm.SURVIVAL_EXTENSION.teams[teamName] == nil then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { 
-            args.player, 
-            ("#ff0000TEAM '#ffffff%s#ff0000' DOESN'T EXIST"):format(teamName) 
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {
+            args.player,
+            ("#ff0000TEAM '#ffffff%s#ff0000' DOESN'T EXIST"):format(teamName)
         })
         return
     end
@@ -638,12 +658,12 @@ function PlayerHook:sv_handleDeleteTeamCommand(args)
     for k, v in pairs(sm.player.getAllPlayers()) do
         if (v.publicData or {}).survivalExtensionTeam == teamName then
             v.publicData.survivalExtensionTeam = nil
-            sm.event.sendToTool(sm.PLAYERHOOK, "sv_setPlayerTeam", { v } )
+            sm.event.sendToTool(sm.PLAYERHOOK, "sv_setPlayerTeam", { v })
         end
     end
 
     sm.SURVIVAL_EXTENSION.teams[teamName] = nil
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", 
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat",
         ("DELETED TEAM %s"):format(teamName)
     )
 end
@@ -651,7 +671,7 @@ end
 function PlayerHook:sv_handleSetTeamCommand(args)
     local player, team = args.player, args[2]
     local teamData = sm.SURVIVAL_EXTENSION.teams[team]
-    
+
     if not teamData then
         self:sv_sendAvailableTeams(player, "#ff0000TEAM NOT FOUND#ffffff")
         return
@@ -661,14 +681,14 @@ function PlayerHook:sv_handleSetTeamCommand(args)
     local prevTeam = player.publicData.survivalExtensionTeam
 
     if prevTeam == team then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { 
-            player, "#ff0000YOU ARE ALREADY A MEMBER OF THIS TEAM" 
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {
+            player, "#ff0000YOU ARE ALREADY A MEMBER OF THIS TEAM"
         })
         return
     end
 
     local name = player:getName()
-    
+
     if prevTeam then
         for i, v in pairs(sm.SURVIVAL_EXTENSION.teams[prevTeam].players) do
             if v == name then
@@ -677,7 +697,7 @@ function PlayerHook:sv_handleSetTeamCommand(args)
             end
         end
     end
-    
+
     player.publicData.survivalExtensionTeam = team
     sm.SURVIVAL_EXTENSION.playerSpawns[player.id] = teamData.spawnPoint or sm.SURVIVAL_EXTENSION.playerSpawns[player.id]
 
@@ -685,9 +705,9 @@ function PlayerHook:sv_handleSetTeamCommand(args)
         table.insert(teamData.players, name)
     end
 
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_setPlayerTeam", { player, team, teamData.colour } )
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", 
-        ("%s JOINED TEAM '%s%s#ffffff'"):format(name, teamData.colour, team) 
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_setPlayerTeam", { player, team, teamData.colour })
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat",
+        ("%s JOINED TEAM '%s%s#ffffff'"):format(name, teamData.colour, team)
     )
 end
 
@@ -696,8 +716,8 @@ function PlayerHook:sv_handleClearTeamCommand(args)
     local prevTeam = player.publicData.survivalExtensionTeam
 
     if not prevTeam then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { 
-            args.player, "#ff0000NO TEAM SET" 
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {
+            args.player, "#ff0000NO TEAM SET"
         })
         return
     end
@@ -713,24 +733,24 @@ function PlayerHook:sv_handleClearTeamCommand(args)
         end
     end
 
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_setPlayerTeam", { player } )
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", 
-        ("%s LEFT '%s%s#ffffff'"):format(name, sm.SURVIVAL_EXTENSION.teams[prevTeam].colour, prevTeam) 
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_setPlayerTeam", { player })
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat",
+        ("%s LEFT '%s%s#ffffff'"):format(name, sm.SURVIVAL_EXTENSION.teams[prevTeam].colour, prevTeam)
     )
 end
 
 function PlayerHook:sv_handleListTeamsCommand(args)
     local text = "AVAILABLE TEAMS:"
     for k, v in pairs(sm.SURVIVAL_EXTENSION.teams) do
-        text = text..("\n\t%s"):format(v.colour..k)
+        text = text .. ("\n\t%s"):format(v.colour .. k)
     end
     sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player, text })
 end
 
 function PlayerHook:sv_handleRespawnCooldownCommand(args)
-    local seconds = args[2]
+    local seconds = math.abs(args[2])
     sm.SURVIVAL_EXTENSION.respawnCooldown = seconds * 40
-    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat", 
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_saveAndChat",
         ("RESPAWN COOLDOWN SET TO: #df7f00%s seconds"):format(seconds)
     )
     sm.SURVIVAL_EXTENSION_syncToPlayers()
@@ -739,9 +759,10 @@ end
 function PlayerHook:sv_handleOverrideDisplayNamesCommand(args)
     local mode = tonumber(args[2])
     if not mode or mode < 1 or mode > #overrideNameDisplayModes then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { 
-            args.player, 
-            ("#ff0000MODE ID MUST BE A NUMBER BETWEEN '#ffffff1#ff0000' and '#ffffff%s#ff0000'"):format(#overrideNameDisplayModes) 
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {
+            args.player,
+            ("#ff0000MODE ID MUST BE A NUMBER BETWEEN '#ffffff1#ff0000' and '#ffffff%s#ff0000'"):format(#
+                overrideNameDisplayModes)
         })
         return
     end
@@ -751,8 +772,8 @@ end
 
 function PlayerHook:sv_handleClearAllInventoriesCommand(args)
     if not sm.game.getLimitedInventory() then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { 
-            args.player, "#ff0000TURN OFF CREATIVE: #ffffff/creativeinventory"  
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {
+            args.player, "#ff0000TURN OFF CREATIVE: #ffffff/creativeinventory"
         })
         return
     end
@@ -760,24 +781,23 @@ function PlayerHook:sv_handleClearAllInventoriesCommand(args)
     local players = sm.player.getAllPlayers()
     local nilUuid = sm.uuid.getNil()
 
-    for _, player in ipairs(players) do 
+    for _, player in ipairs(players) do
         local inventory = player:getInventory()
-        
+
         if sm.exists(inventory) then
             local attempts = 0
             local maxAttempts = 3
 
             while not inventory:isEmpty() and attempts < maxAttempts do
                 if sm.container.beginTransaction() then
-                
                     for i = 0, inventory:getSize() - 1 do
                         local item = inventory:getItem(i)
-                        
+
                         if not item.uuid:isNil() then
                             sm.container.setItem(inventory, i, nilUuid, 0)
                         end
                     end
-                    
+
                     sm.container.endTransaction()
                 end
 
@@ -833,7 +853,7 @@ function PlayerHook:sv_handleClearTeamSpawnPointCommand(args)
     end
 
     teamData.spawnPoint = nil
-    
+
     local teamPlayersMap = {}
     for _, teamPlayer in ipairs(sm.player.getAllPlayers()) do
         teamPlayersMap[teamPlayer:getName()] = teamPlayer
@@ -854,17 +874,55 @@ function PlayerHook:sv_handleClearTeamSpawnPointCommand(args)
     end
 end
 
-function PlayerHook:sv_handleSuicideCommand(args)
+function PlayerHook:sv_handleKillCommand(args)
     local character = args.player:getCharacter()
-    
+
     if sm.SURVIVAL_EXTENSION.godMode then
-        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player,  "#ff0000TURN OFF GOD MODE: #ffffff/godmode"})
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single",
+            { args.player, "#ff0000TURN OFF GOD MODE: #ffffff/godmode" })
         return
     end
 
     if character and sm.exists(character) then
         sm.event.sendToPlayer(args.player, "sv_takeDamage", 100)
     end
+end
+
+function PlayerHook:sv_handleRenameTeamCommand(args)
+    local oldTeamName = args[2]
+    local newTeamName = args[3]
+    
+    if sm.SURVIVAL_EXTENSION.teams[oldTeamName] == nil then
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {args.player, "#FF0000ERROR: TEAM NOT FOUND: " .. tostring(oldTeamName)})
+        return
+    end
+
+    if sm.SURVIVAL_EXTENSION.teams[newTeamName] ~= nil then 
+        sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", {args.player, "#FF0000ERROR: NAME ALREADY TAKEN!"})
+        return
+    end
+
+    sm.SURVIVAL_EXTENSION.teams[newTeamName] = sm.SURVIVAL_EXTENSION.teams[oldTeamName]
+    sm.SURVIVAL_EXTENSION.teams[oldTeamName] = nil
+
+    local teamData = sm.SURVIVAL_EXTENSION.teams[newTeamName]
+
+    local playersInTeam = {}
+    for _, name in ipairs(teamData.players) do
+        playersInTeam[name] = true
+    end
+
+    for _, player in pairs(sm.player.getAllPlayers()) do
+        if playersInTeam[player.name] then
+            sm.event.sendToTool(sm.PLAYERHOOK, "sv_setPlayerTeam", {player, newTeamName, teamData.color})
+
+            player.publicData.survivalExtensionTeam = newTeamName
+            
+            sm.SURVIVAL_EXTENSION.playerSpawns[player.id] = teamData.spawnPoint or sm.SURVIVAL_EXTENSION.playerSpawns[player.id]
+        end
+    end
+
+    sm.event.sendToTool(sm.PLAYERHOOK, "sv_chatMessage_single", { args.player, ("TEAM %s%s #FFFFFFRENAMED TO %s%s"):format(teamData.colour, oldTeamName, teamData.colour, newTeamName) })
 end
 
 -- [[local gameHooked = false
@@ -880,147 +938,193 @@ end
 -- sm.gui.createSurvivalHudGui = hudHook]]
 
 local commands = {
-    { name = "pvp",                 description = "Toggle pvp",
+    {
+        name = "pvp",
+        description = "Toggle pvp",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "healthRegeneration",  description = "Toggle health regeneration",
+    {
+        name = "healthRegeneration",
+        description = "Toggle health regeneration",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "hunger",              description = "Toggle hunger",
+    {
+        name = "hunger",
+        description = "Toggle hunger",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "thirst",              description = "Toggle thirst",
+    {
+        name = "thirst",
+        description = "Toggle thirst",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "breathLoss",          description = "Toggle breath loss underwater",
+    {
+        name = "breathLoss",
+        description = "Toggle breath loss underwater",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "respawnStats",        description = "Set the stats that the player receives upon respawning",
+    {
+        name = "respawnStats",
+        description = "Set the stats that the player receives upon respawning",
         args = {
-            { "number", "hp", false },
+            { "number", "hp",    false },
             { "number", "water", false },
-            { "number", "food", false }
+            { "number", "food",  false }
         }
     },
 
-    { name = "creativeInventory",   description = "Toggles the creative inventory",
+    {
+        name = "creativeInventory",
+        description = "Toggles the creative inventory",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "collisionTumble",     description = "Toggles collision tumble",
+    {
+        name = "collisionTumble",
+        description = "Toggles collision tumble",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "collisionDamage",     description = "Toggles collision damage",
+    {
+        name = "collisionDamage",
+        description = "Toggles collision damage",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "godMode",             description = "Toggles god mode",
+    {
+        name = "godMode",
+        description = "Toggles god mode",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "savePreset",          description = "Saves the settings to a preset",
+    {
+        name = "savePreset",
+        description = "Saves the settings to a preset",
         args = {
             { "string", "presetName", false },
         }
     },
 
-    { name = "loadPreset",          description = "Loads the settings from a preset",
+    {
+        name = "loadPreset",
+        description = "Loads the settings from a preset",
         args = {
             { "string", "presetName", false },
         }
     },
 
-    { name = "dropItems",           description = "Toggles whether or not items are dropped upon death",
+    {
+        name = "dropItems",
+        description = "Toggles whether or not items are dropped upon death",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "ammoConsumption",     description = "Toggles the ammo consumption",
+    {
+        name = "ammoConsumption",
+        description = "Toggles the ammo consumption",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "setSpawnPoint",       description = "Sets the spawn point(beds override it)", all = true },
+    { name = "setSpawnPoint",   description = "Sets the spawn point(beds override it)", all = true },
 
-    { name = "clearSpawnPoint",     description = "Clears the spawn point", all = true },
+    { name = "clearSpawnPoint", description = "Clears the spawn point",                 all = true },
 
-    { name = "createTeam",          description = "Creates a team",
+    {
+        name = "createTeam",
+        description = "Creates a team",
         args = {
-            { "string", "teamName", false },
-            { "bool", "allowCustomSpawn", false},
+            { "string", "teamName",            false },
+            { "bool",   "allowCustomSpawn",    true },
             { "string", "teamColor(hex code)", true },
         }
-    },   
+    },
 
-    { name = "deleteTeam",          description = "Deletes a team",
+    {
+        name = "deleteTeam",
+        description = "Deletes a team",
         args = {
             { "string", "teamName", false }
         }
     },
 
-    { name = "setTeam",             description = "Sets your team",
+    {
+        name = "setTeam",
+        description = "Sets your team",
         args = {
             { "string", "teamName", false },
         },
         all = true
     },
 
-    { name = "clearTeam",           description = "Clears your team",
+    {
+        name = "clearTeam",
+        description = "Clears your team",
         args = {},
         all = true
     },
 
-    { name = "listTeams",           description = "Lists all the available teams",
+    {
+        name = "listTeams",
+        description = "Lists all the available teams",
         args = {},
         all = true
     },
 
-    { name = "friendlyFire",        description = "Toggles friendly fire",
+    {
+        name = "friendlyFire",
+        description = "Toggles friendly fire",
         args = {
             { "bool", "enable", true },
         }
     },
 
-    { name = "overrideDisplayNames",description = "Sets the display mode of player names for all palyers",
+    {
+        name = "overrideDisplayNames",
+        description = "Sets the display mode of player names for all palyers",
         args = {
             { "int", "mode(1-all/2-team/3-none/4-no override)", true },
         },
         all = false
     },
 
-    { name = "setRespawnCooldown",  description = "Sets the respawn cooldown",
+    {
+        name = "setRespawnCooldown",
+        description = "Sets the respawn cooldown",
         args = {
             { "int", "cooldown(seconds)", false },
         }
     },
 
-    { name = "unSeatOnDamage",      description = "Toggles whether the player gets knocked out of their seat upon taking damage",
+    {
+        name = "unSeatOnDamage",
+        description = "Toggles whether the player gets knocked out of their seat upon taking damage",
         args = {
             { "bool", "enable", true },
         }
@@ -1028,20 +1132,29 @@ local commands = {
 
     { name = "clearAllInventories", description = "Remove all items from every player's inventory" },
 
-    { name = "setTeamSpawnPoint", description = "Set team-specific spawn location using your current position", 
+    {
+        name = "setTeamSpawnPoint",
+        description = "Set team-specific spawn location using your current position",
         args = {
             { "string", "teamName", false }
         }
     },
 
-    { name = "clearTeamSpawnPoint", description = "Remove custom spawn point for a team",
+    {
+        name = "clearTeamSpawnPoint",
+        description = "Remove custom spawn point for a team",
         args = {
             { "string", "teamName", false }
         }
     },
 
-    { name = "suicide", description = "Kills the player character instantly", all = true },
+    { name = "kill", description = "Kills the player character instantly", all = true },
 
+    { name = "renameTeam", description = "", args = {
+            { "string", "targetTeamName", false },
+            { "string", "newTeamName", false }
+        }
+    }
 }
 
 function PlayerHook:sv_registerCommandHandlers()
@@ -1074,7 +1187,8 @@ function PlayerHook:sv_registerCommandHandlers()
         ["/clearallinventories"] = self.sv_handleClearAllInventoriesCommand,
         ["/setteamspawnpoint"] = self.sv_handleSetTeamSpawnPointCommand,
         ["/clearteamspawnpoint"] = self.sv_handleClearTeamSpawnPointCommand,
-        ["/suicide"] = self.sv_handleSuicideCommand
+        ["/kill"] = self.sv_handleKillCommand,
+        ["/renameteam"] = self.sv_handleRenameTeamCommand
     }
 end
 
@@ -1082,18 +1196,19 @@ oldBind = oldBind or sm.game.bindChatCommand
 function bindHook(command, params, callback, help)
     if not gameHooked then
         gameHooked = true
-        
+
         for k, v in pairs(commands) do
             if v.all or sm.isHost then
-                oldBind( "/"..v.name:lower(), v.args or {}, "cl_onChatCommand", v.description )
+                oldBind("/" .. v.name:lower(), v.args or {}, "cl_onChatCommand", v.description)
             end
         end
 
         dofile("$CONTENT_24fc65a7-e1aa-4b66-86bc-d8229df53981/Scripts/vanilla_override.lua")
     end
 
-	return oldBind(command, params, callback, help)
+    return oldBind(command, params, callback, help)
 end
+
 sm.game.bindChatCommand = bindHook
 
 oldWorldEvent = oldWorldEvent or sm.event.sendToWorld
@@ -1101,10 +1216,9 @@ function worldEventHook(world, callback, args)
     sm.log.warning("WORLD EVENT HOOK:", world, callback, args)
 
     if callback == "sv_e_onChatCommand" then
-        local command = args[1]
-        PlayerHook:sv_handleChatCommand(command, args)
+        PlayerHook:sv_handleChatCommand(args[1], args)
     end
-    
+
     return oldWorldEvent(world, callback, args)
 end
 

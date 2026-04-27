@@ -1,174 +1,224 @@
 {
-    "partList": [
-        {
-			"uuid": "de7eea5b-9262-476b-a5bb-238d0e91f81f",
-			"name": "obj_survivalobject_kobag",
-			"renderable": {
-				"lodList": [
-					{
-						"subMeshList": [
-							{
-								"textureList": [
-									"$SURVIVAL_DATA/Objects/Textures/survivalobject/obj_survivalobjects_kobag_dif.tga",
-									"$SURVIVAL_DATA/Objects/Textures/survivalobject/obj_survivalobjects_kobag_asg.tga",
-									"$SURVIVAL_DATA/Objects/Textures/survivalobject/obj_survivalobjects_kobag_nor.tga"
-								],
-								"material": "DifAsgNor"
-							}
-						],
-						"mesh": "$SURVIVAL_DATA/Objects/Mesh/survivalobject/obj_survivalobjects_kobag.fbx"
-					}
-				]
-			},
-			"color": "cbcbcb",
-			"cylinder": {
-				"diameter": 2,
-				"depth": 4,
-				"margin": 0.1,
-				"axis": "Y"
-			},
-			"scripted": {
-				"filename": "$CONTENT_DATA/Scripts/LostItems.lua",
-				"classname": "LostItems",
-				"data": {}
-			},
-			"rotationSet": "PropZY",
-			"physicsMaterial": "Plastic",
-			"ratings": {
-				"density": 5,
-				"durability": 10,
-				"friction": 5,
-				"buoyancy": 5
-			},
-			"flammable": false,
-			"restrictions": {
-				"buildable": false,
-				"erasable": false,
-				"paintable": false,
-				"usable": true
-			},
-            "showInInventory": false
-		},
-		{
-			"uuid": "5eb8975b-0acf-43a7-ab4e-62ce661c0df7",
-			"name": "obj_interactive_comfybed",
-			"renderable": "$SURVIVAL_DATA/Objects/Renderable/interactive/obj_interactive_comfybed.rend",
-			"color": "3e9ffe",
-			"box": {
-				"x": 4,
-				"y": 1,
-				"z": 7
-			},
-			"scripted": {
-				"filename": "$CONTENT_DATA/Scripts/Bed.lua",
-				"classname": "Bed",
-				"data": {},
-				"seat": {
-					"bones": [
-						{
-							"name": "root_jnt",
-							"offset": {
-								"x": 0.0,
-								"y": 1.0,
-								"z": 0.3
-							}
-						},
-						{
-							"name": "LeftForeArm",
-							"offset": {
-								"x": 1.5,
-								"y": 1.1,
-								"z": 1.1
-							},
-							"freeRotation": true
-						},
-						{
-							"name": "RightForeArm",
-							"offset": {
-								"x": -1.5,
-								"y": 1.1,
-								"z": 1.1
-							},
-							"freeRotation": true
-						}
-					],
-					"ragdollFile": "$SURVIVAL_DATA/Character/bed_ragdoll.json",
-					"enterAudio": "Seat seated",
-					"exitAudio": "Seat unseated"
-				}
-			},
-			"rotationSet": "PropFullMinusNegY",
-			"sticky": "-Z+Z-Y-X+X",
-			"physicsMaterial": "Metal",
-			"ratings": {
-				"density": 3,
-				"durability": 3,
-				"friction": 4,
-				"buoyancy": 6
-			},
-			"flammable": true,
-			"restrictions": {
-				"usable": true
-			}
-		},
-		{
-			"uuid": "87316002-3bbe-4fd9-a51f-8adf112ed8dd",
-			"name": "obj_interactive_bedGate",
-			"renderable": "$GAME_DATA/Objects/Renderable/Interactive/obj_interactive_logicgate.rend",
-			"color": "df7f01",
-			"box": {
-				"x": 1,
-				"y": 1,
-				"z": 1
-			},
-			"scripted": {
-				"filename": "$CONTENT_DATA/Scripts/Bed.lua",
-				"classname": "Bed",
-				"data": {},
-				"seat": {
-					"bones": [
-						{
-							"name": "root_jnt",
-							"offset": {
-								"x": 0.0,
-								"y": 1.0,
-								"z": 0.3
-							}
-						},
-						{
-							"name": "LeftForeArm",
-							"offset": {
-								"x": 1.5,
-								"y": 1.1,
-								"z": 1.1
-							},
-							"freeRotation": true
-						},
-						{
-							"name": "RightForeArm",
-							"offset": {
-								"x": -1.5,
-								"y": 1.1,
-								"z": 1.1
-							},
-							"freeRotation": true
-						}
-					],
-					"ragdollFile": "$SURVIVAL_DATA/Character/bed_ragdoll.json",
-					"enterAudio": "Seat seated",
-					"exitAudio": "Seat unseated"
-				}
-			},
-			"rotationSet": "PropYZ",
-			"physicsMaterial": "Mechanical",
-			"ratings": {
-				"density": 2,
-				"durability": 3,
-				"friction": 5,
-				"buoyancy": 2
-			},
-			"flammable": false,
-			"stackSize": 10
-		}
-    ]
+   "partList" : [
+      {
+         "color" : "cbcbcb",
+         "cylinder" : {
+            "axis" : "Y",
+            "depth" : 4,
+            "diameter" : 2,
+            "margin" : 0.10
+         },
+         "flammable" : false,
+         "name" : "obj_survivalobject_kobag",
+         "physicsMaterial" : "Plastic",
+         "ratings" : {
+            "buoyancy" : 5,
+            "density" : 5,
+            "durability" : 10,
+            "friction" : 5
+         },
+         "renderable" : {
+            "lodList" : [
+               {
+                  "mesh" : "$SURVIVAL_DATA/Objects/Mesh/survivalobject/obj_survivalobjects_kobag.fbx",
+                  "subMeshList" : [
+                     {
+                        "material" : "DifAsgNor",
+                        "textureList" : [
+                           "$SURVIVAL_DATA/Objects/Textures/survivalobject/obj_survivalobjects_kobag_dif.tga",
+                           "$SURVIVAL_DATA/Objects/Textures/survivalobject/obj_survivalobjects_kobag_asg.tga",
+                           "$SURVIVAL_DATA/Objects/Textures/survivalobject/obj_survivalobjects_kobag_nor.tga"
+                        ]
+                     }
+                  ]
+               }
+            ]
+         },
+         "restrictions" : {
+            "buildable" : false,
+            "erasable" : false,
+            "paintable" : false,
+            "usable" : true
+         },
+         "rotationSet" : "PropZY",
+         "scripted" : {
+            "classname" : "LostItems",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/LostItems.lua"
+         },
+         "showInInventory" : false,
+         "uuid" : "de7eea5b-9262-476b-a5bb-238d0e91f81f"
+      },
+      {
+         "box" : {
+            "x" : 4,
+            "y" : 1,
+            "z" : 7
+         },
+         "color" : "3e9ffe",
+         "flammable" : true,
+         "name" : "obj_interactive_comfybed",
+         "physicsMaterial" : "Metal",
+         "ratings" : {
+            "buoyancy" : 6,
+            "density" : 3,
+            "durability" : 3,
+            "friction" : 4
+         },
+         "renderable" : "$SURVIVAL_DATA/Objects/Renderable/interactive/obj_interactive_comfybed.rend",
+         "restrictions" : {
+            "usable" : true
+         },
+         "rotationSet" : "PropFullMinusNegY",
+         "scripted" : {
+            "classname" : "Bed",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/Bed.lua",
+            "seat" : {
+               "bones" : [
+                  {
+                     "name" : "root_jnt",
+                     "offset" : {
+                        "x" : 0.0,
+                        "y" : 1.0,
+                        "z" : 0.30
+                     }
+                  },
+                  {
+                     "freeRotation" : true,
+                     "name" : "LeftForeArm",
+                     "offset" : {
+                        "x" : 1.50,
+                        "y" : 1.10,
+                        "z" : 1.10
+                     }
+                  },
+                  {
+                     "freeRotation" : true,
+                     "name" : "RightForeArm",
+                     "offset" : {
+                        "x" : -1.50,
+                        "y" : 1.10,
+                        "z" : 1.10
+                     }
+                  }
+               ],
+               "enterAudio" : "Seat seated",
+               "exitAudio" : "Seat unseated",
+               "ragdollFile" : "$SURVIVAL_DATA/Character/bed_ragdoll.json"
+            }
+         },
+         "sticky" : "-Z+Z-Y-X+X",
+         "uuid" : "5eb8975b-0acf-43a7-ab4e-62ce661c0df7"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "df7f01",
+         "flammable" : false,
+         "name" : "obj_interactive_bedGate",
+         "physicsMaterial" : "Mechanical",
+         "ratings" : {
+            "buoyancy" : 2,
+            "density" : 2,
+            "durability" : 3,
+            "friction" : 5
+         },
+         "renderable" : "$GAME_DATA/Objects/Renderable/Interactive/obj_interactive_logicgate.rend",
+         "rotationSet" : "PropYZ",
+         "scripted" : {
+            "classname" : "Bed",
+            "data" : {},
+            "filename" : "$CONTENT_DATA/Scripts/Bed.lua",
+            "seat" : {
+               "bones" : [
+                  {
+                     "name" : "root_jnt",
+                     "offset" : {
+                        "x" : 0.0,
+                        "y" : 1.0,
+                        "z" : 0.30
+                     }
+                  },
+                  {
+                     "freeRotation" : true,
+                     "name" : "LeftForeArm",
+                     "offset" : {
+                        "x" : 1.50,
+                        "y" : 1.10,
+                        "z" : 1.10
+                     }
+                  },
+                  {
+                     "freeRotation" : true,
+                     "name" : "RightForeArm",
+                     "offset" : {
+                        "x" : -1.50,
+                        "y" : 1.10,
+                        "z" : 1.10
+                     }
+                  }
+               ],
+               "enterAudio" : "Seat seated",
+               "exitAudio" : "Seat unseated",
+               "ragdollFile" : "$SURVIVAL_DATA/Character/bed_ragdoll.json"
+            }
+         },
+         "stackSize" : 10,
+         "uuid" : "87316002-3bbe-4fd9-a51f-8adf112ed8dd"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "cc2121",
+         "flammable" : false,
+         "name" : "obj_interactive_teamGate",
+         "physicsMaterial" : "Mechanical",
+         "ratings" : {
+            "buoyancy" : 10,
+            "density" : 10,
+            "durability" : 10,
+            "friction" : 10
+         },
+         "renderable" : "$GAME_DATA/Objects/Renderable/Interactive/obj_interactive_logicgate.rend",
+         "rotationSet" : "PropYZ",
+         "scripted" : {
+            "classname" : "TeamsGate",
+            "filename" : "$CONTENT_DATA/Scripts/Interactive/TeamsGate.lua"
+         },
+         "stackSize" : 10,
+         "uuid" : "c105997e-c73b-4573-9d55-249eefef31e0"
+      },
+      {
+         "box" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+         },
+         "color" : "15cf94",
+         "flammable" : false,
+         "name" : "obj_interactive_joinGate",
+         "physicsMaterial" : "Mechanical",
+         "ratings" : {
+            "buoyancy" : 10,
+            "density" : 10,
+            "durability" : 10,
+            "friction" : 10
+         },
+         "renderable" : "$GAME_DATA/Objects/Renderable/Interactive/obj_interactive_logicgate.rend",
+         "rotationSet" : "PropYZ",
+         "scripted" : {
+            "classname" : "JoinGate",
+            "filename" : "$CONTENT_DATA/Scripts/Interactive/JoinGate.lua"
+         },
+         "stackSize" : 10,
+         "uuid" : "a424500a-8058-4ef0-82ba-674f9a0ec9ab"
+      }
+   ]
 }

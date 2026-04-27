@@ -1,6 +1,14 @@
 {
-    "87316002-3bbe-4fd9-a51f-8adf112ed8dd": {
-        "title": "Respawn Gate",
-        "description": "Functions the same as the bed."
-    }
+   "87316002-3bbe-4fd9-a51f-8adf112ed8dd" : {
+      "description" : "Functions the same as the bed.",
+      "title" : "Respawn Gate"
+   },
+   "a424500a-8058-4ef0-82ba-674f9a0ec9ab" : {
+      "description" : "Allows players to join a team selected by the host.",
+      "title" : "Join Gate"
+   },
+   "c105997e-c73b-4573-9d55-249eefef31e0" : {
+      "description" : "A tool for full player team management: create, rename, and delete. Supports custom names and HEX colors. \n\nWarning: Features are restricted to the Host only. The block directly modifies world data — use at your own risk.",
+      "title" : "Teams Gate"
+   }
 }
