@@ -40,7 +40,7 @@ function TeamsGate:sv_createTeam(args, caller)
             [1] = "/createteam",
             [2] = args.name,
             [3] = args.isCustomSpawn,
-            [4] = args.color,
+            [4] = args.colour,
             player = caller
         })
 end
@@ -204,8 +204,8 @@ end
 
 function TeamsGate:cl_updateTeamList()
     local teamKeys = {}
-    for teamName, _ in pairs(sm.SURVIVAL_EXTENSION.teams) do
-        table.insert(teamKeys, teamName)
+    for name, _ in pairs(sm.SURVIVAL_EXTENSION.teams) do
+        table.insert(teamKeys, name)
     end
     table.sort(teamKeys)
 
@@ -222,7 +222,7 @@ function TeamsGate:cl_updateTeamList()
         local teamName = teamKeys[actualI]
         self.pageData[i] = teamName
         if teamName then     
-            self.gui:setText("tItem" .. i, teamName) 
+            self.gui:setText("tItem" .. i, teamName)
             self.gui:setVisible("tItem" .. i, true)
         else
             self.gui:setVisible("tItem" .. i, false)

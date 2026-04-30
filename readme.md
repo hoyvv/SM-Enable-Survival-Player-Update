@@ -7,6 +7,10 @@
 - [GitHub Repository](https://github.com/Vajdani/SM-Enable-Survival-Player)
 - [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3216708262)
 
+**Fork resources:**
+
+- [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3606770610)
+
 > *The original mod is no longer maintained. This fork is updated and maintained by a developer from the Scrap Wars team.*
 
 ---
@@ -36,8 +40,8 @@ The mod offers several chat commands to customize your experience.
 |---|---|
 | `/ammoconsumption` | Toggles whether weapons consume ammunition |
 | `/breathloss` | Toggles breath loss underwater |
-| `/clearallinventories` | Clears all items from all players' inventories |
-| `/clearteamspawnpoint` | Clears the spawn point for a team |
+| `/clearinventories` | Clears all items from all players' inventories |
+| `/clearteamspawn` | Clears the spawn point for a team |
 | `/collisiondamage` | Toggles whether you can take damage from collisions |
 | `/collisiontumble` | Toggles whether you can tumble from collisions |
 | `/createteam` | Creates a team with a name and color (optional) |
@@ -46,18 +50,20 @@ The mod offers several chat commands to customize your experience.
 | `/dropitems` | Whether players drop death bags after dying |
 | `/friendlyfire` | Toggles friendly fire |
 | `/godmode` | Toggles god mode |
-| `/healthregeneration` | Toggles health regeneration |
+| `/healthreg` | Toggles health regeneration |
 | `/hunger` | Toggles hunger |
 | `/loadpreset` | Loads settings by the preset name |
-| `/overridedisplaynames` | Sets the display mode of player names for all players (`1` — all / `2` — team / `3` — none / `4` — no override) |
+| `/displaynames` | Sets the display mode of player names for all players (`1` — all / `2` — team / `3` — none / `4` — no override) |
 | `/pvp` | Enables player vs. player mode — players can hurt each other |
 | `/renameteam` | Renames an existing team to a new name |
 | `/respawnstats` | Sets start HP, thirst, and hunger |
 | `/savepreset` | Saves the current settings by name |
-| `/setrespawncooldown` | Sets the respawn cooldown |
-| `/setteamspawnpoint` | Sets a specific spawn point for a team |
+| `/respawncooldown` | Sets the respawn cooldown |
+| `/setteamspawn` | Sets a specific spawn point for a team |
 | `/thirst` | Toggles thirst |
 | `/unseatondamage` | Sets whether the player gets unseated upon receiving damage |
+| `/todcycle` | Toggles/sets day cycle speed (adds server load) |
+| `/tod` | Sets the time of day |
 
 ---
 
@@ -65,10 +71,10 @@ The mod offers several chat commands to customize your experience.
 
 | Command | Description |
 |---|---|
-| `/clearspawnpoint` | Clears your personal spawn point |
+| `/clearspawn` | Clears your personal spawn point |
 | `/clearteam` | Clears your team |
 | `/kill` | Kills the player character instantly |
 | `/listteams` | Lists all current teams in the chat |
-| `/setspawnpoint` | Sets your personal spawn point (takes priority over beds) |
+| `/listplayers` | Lists all players |
+| `/setspawn` | Sets your personal spawn point (takes priority over beds) |
 | `/setteam` | Sets your team |
-| `/suicide` | Instantly kills your character to allow respawning |

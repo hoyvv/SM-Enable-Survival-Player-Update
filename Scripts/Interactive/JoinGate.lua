@@ -3,6 +3,13 @@ JoinGate = class()
 
 local GUI_LAYOUT = "$CONTENT_DATA/Gui/Layouts/JoinGateLayout.layout"
 
+function JoinGate:server_onCreate()
+    local savedData = self.storage:load()
+    if savedData then
+        self.network:setClientData(savedData)
+    end
+end
+
 function JoinGate:sv_setTeam(teamName, caller)
     if teamName == "" or teamName == nil then return end
     
@@ -15,6 +22,11 @@ function JoinGate:sv_setTeam(teamName, caller)
         [2] = teamName,
         player = caller
     })
+end
+
+function JoinGate:sv_saveSelectedTeam(teamData)
+    self.storage:save(teamData)
+    self.network:setClientData(teamData)
 end
 
 function JoinGate:client_onCreate()
@@ -31,6 +43,12 @@ function JoinGate:client_onCreate()
     self.selectedTeamName = ""
 end
 
+function JoinGate:client_onClientDataUpdate(data)
+    if data then
+        self.selectedTeamData = data
+    end
+end
+
 function JoinGate:client_onDestroy()
     self:cl_destroyGui()
 end
@@ -41,9 +59,13 @@ function JoinGate:client_canInteract()
 end
 
 function JoinGate:client_canTinker()
-	sm.gui.setInteractionText("Press", sm.gui.getKeyBinding("Use", true), "to open gui")
+    sm.gui.setInteractionText("Press", sm.gui.getKeyBinding("Use", true), "to open gui")
 
-    if self.selectedTeamData.name == "" or #self.sortedTeams == 0 then
+    if self.selectedTeamData.name == "" then
+        return false
+    end
+
+    if sm.SURVIVAL_EXTENSION.teams[self.selectedTeamData.name] == nil then
         return false
     end
 
@@ -74,6 +96,7 @@ end
 
 function JoinGate:client_onTinker(character, state)
     if not state then return end
+
     self.network:sendToServer("sv_setTeam", self.selectedTeamData.name)
 end
 
@@ -93,11 +116,9 @@ end
 
 function JoinGate:cl_updateSelectedTeam()
     if #self.sortedTeams == 0 then
-		self.selectedTeamName = ""
-		self.selectedTeamData.name = ""
-		
-		return
-	end
+        self.selectedTeamName = ""
+        return
+    end
 
     local selectedName = self.sortedTeams[self.currentPage]
     self.selectedTeamName = selectedName
@@ -110,10 +131,12 @@ function JoinGate:cl_onApplyPressed()
     local teamData = sm.SURVIVAL_EXTENSION.teams[self.selectedTeamName]
     if teamData == nil then return end
 
-    self.selectedTeamData = {
+    local newTeamData = {
         name = self.selectedTeamName,
         colour = teamData.colour
     }
+
+    self.network:sendToServer("sv_saveSelectedTeam", newTeamData)
 end
 
 function JoinGate:cl_getSortedTeams()
@@ -136,6 +159,6 @@ function JoinGate:cl_destroyGui()
         if self.gui:isActive() then self.gui:close() end
         self.gui:destroy()
     end
-	
+    
     self.gui = nil
 end

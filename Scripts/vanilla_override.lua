@@ -223,63 +223,60 @@ function SurvivalPlayer.server_onFixedUpdate(self, dt)
             self.sv.statsTimer:start(StatsTickRate)
 
             -- Recover health from food
-            if self.sv.saved.stats.food > FoodRecoveryThreshold and sm.SURVIVAL_EXTENSION.health_regen then
-                local fastRecoveryFraction = 0
+                if sm.SURVIVAL_EXTENSION.health_regen then
+                local canRecover = not sm.SURVIVAL_EXTENSION.hunger or self.sv.saved.stats.food > FoodRecoveryThreshold
+                
+                if canRecover then
+                    local fastRecoveryFraction = 0
 
-                -- Fast recovery when food is above fast threshold
-                if self.sv.saved.stats.food > FastFoodRecoveryThreshold then
-                    local recoverableHp = math.min(self.sv.saved.stats.maxhp - self.sv.saved.stats.hp, FastHpRecovery)
-                    local foodSpend = math.min(recoverableHp * FastFoodCostPerHpRecovery,
-                        math.max(self.sv.saved.stats.food - FastFoodRecoveryThreshold, 0))
-                    local recoveredHp = foodSpend / FastFoodCostPerHpRecovery
+                    if not sm.SURVIVAL_EXTENSION.hunger or self.sv.saved.stats.food > FastFoodRecoveryThreshold then
+                        local recoverableHp = math.min(self.sv.saved.stats.maxhp - self.sv.saved.stats.hp, FastHpRecovery)
+                        local recoveredHp = 0
 
-                    self.sv.saved.stats.hp = math.min(self.sv.saved.stats.hp + recoveredHp, self.sv.saved.stats.maxhp)
+                        if sm.SURVIVAL_EXTENSION.hunger then
+                            local foodSpend = math.min(recoverableHp * FastFoodCostPerHpRecovery, math.max(self.sv.saved.stats.food - FastFoodRecoveryThreshold, 0))
+                            recoveredHp = foodSpend / FastFoodCostPerHpRecovery
+                            self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+                        else
+                            recoveredHp = recoverableHp
+                        end
 
-                    if sm.SURVIVAL_EXTENSION.hunger then
-                        self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+                        self.sv.saved.stats.hp = math.min(self.sv.saved.stats.hp + recoveredHp, self.sv.saved.stats.maxhp)
+                        fastRecoveryFraction = recoveredHp / FastHpRecovery
                     end
 
-                    fastRecoveryFraction = (recoveredHp) / FastHpRecovery
-                end
+                    local recoverableHp = math.min(self.sv.saved.stats.maxhp - self.sv.saved.stats.hp, HpRecovery * (1 - fastRecoveryFraction))
+                    local recoveredHp = 0
 
-                -- Normal recovery
-                local recoverableHp = math.min(self.sv.saved.stats.maxhp - self.sv.saved.stats.hp,
-                    HpRecovery * (1 - fastRecoveryFraction))
-                local foodSpend = math.min(recoverableHp * FoodCostPerHpRecovery,
-                    math.max(self.sv.saved.stats.food - FoodRecoveryThreshold, 0))
-                local recoveredHp = foodSpend / FoodCostPerHpRecovery
+                    if sm.SURVIVAL_EXTENSION.hunger then
+                        local foodSpend = math.min(recoverableHp * FoodCostPerHpRecovery, math.max(self.sv.saved.stats.food - FoodRecoveryThreshold, 0))
+                        recoveredHp = foodSpend / FoodCostPerHpRecovery
+                        self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+                    else
+                        recoveredHp = recoverableHp
+                    end
 
-                self.sv.saved.stats.hp = math.min(self.sv.saved.stats.hp + recoveredHp, self.sv.saved.stats.maxhp)
-
-                if sm.SURVIVAL_EXTENSION.hunger then
-                    self.sv.saved.stats.food = self.sv.saved.stats.food - foodSpend
+                    self.sv.saved.stats.hp = math.min(self.sv.saved.stats.hp + recoveredHp, self.sv.saved.stats.maxhp)
                 end
             end
 
-            -- Spend water and food on stamina usage
-            -- Decrease food and water with time
             if sm.SURVIVAL_EXTENSION.hunger then
-                self.sv.saved.stats.food = math.max(self.sv.saved.stats.food - self.sv.staminaSpend * FoodCostPerStamina,
-                    0)
-                self.sv.saved.stats.food = math.max(self.sv.saved.stats.food - FoodLostPerSecond, 0)
+                self.sv.saved.stats.food = math.max(self.sv.saved.stats.food - self.sv.staminaSpend * FoodCostPerStamina - FoodLostPerSecond, 0)
             end
 
             if sm.SURVIVAL_EXTENSION.thirst then
-                self.sv.saved.stats.water = math.max(
-                self.sv.saved.stats.water - self.sv.staminaSpend * WaterCostPerStamina, 0)
-                self.sv.saved.stats.water = math.max(self.sv.saved.stats.water - WaterLostPerSecond, 0)
+                self.sv.saved.stats.water = math.max(self.sv.saved.stats.water - self.sv.staminaSpend * WaterCostPerStamina - WaterLostPerSecond, 0)
             end
             self.sv.staminaSpend = 0
 
-            local fatigueDamageFromHp = false
-            if self.sv.saved.stats.food <= 0 and sm.SURVIVAL_EXTENSION.hunger then
+            local fatigueDamage = false
+            if sm.SURVIVAL_EXTENSION.hunger and self.sv.saved.stats.food <= 0 then
                 self:sv_takeDamage(FatigueDamageHp, "fatigue")
-                fatigueDamageFromHp = true
+                fatigueDamage = true
             end
-            if self.sv.saved.stats.water <= 0 and sm.SURVIVAL_EXTENSION.thirst then
-                if not fatigueDamageFromHp then
-                    self:sv_takeDamage(FatigueDamageWater, "fatigue")
-                end
+            
+            if sm.SURVIVAL_EXTENSION.thirst and self.sv.saved.stats.water <= 0 and not fatigueDamage then
+                self:sv_takeDamage(FatigueDamageWater, "fatigue")
             end
 
             self.storage:save(self.sv.saved)
@@ -296,8 +293,7 @@ function SurvivalPlayer.sv_e_staminaSpend(self, stamina)
     end
 end
 
-function SurvivalPlayer.server_onCollision(self, other, collisionPosition, selfPointVelocity, otherPointVelocity,
-                                           collisionNormal)
+function SurvivalPlayer.server_onCollision(self, other, collisionPosition, selfPointVelocity, otherPointVelocity, collisionNormal)
     if not self.player.character or not sm.exists(self.player.character) then
         return
     end
